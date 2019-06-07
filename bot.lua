@@ -4,44 +4,6 @@ redis = redis.connect('127.0.0.1', 6379)
 function dl_cb(arg, data)
 end
 function get_admin ()
-	if redis:get('botBOT-IDadminset') then
-		return true
-	else
-   		print("\n\27[32m  لازمه کارکرد صحیح ، فرامین و امورات مدیریتی ربات تبلیغ گر <<\n                    تعریف کاربری به عنوان مدیر است\n\27[34m                   ایدی خود را به عنوان مدیر وارد کنید\n\27[32m    شما می توانید از ربات زیر شناسه عددی خود را بدست اورید\n\27[34m        ربات:       @id_ProBot")
-    	print("\n\27[32m >> Tabchi Bot need a fullaccess user (ADMIN)\n\27[34m Imput Your ID as the ADMIN\n\27[32m You can get your ID of this bot\n\27[34m                 @id_ProBot")
-    	print("\n\27[36m                      : شناسه عددی ادمین را وارد کنید << \n >> Imput the Admin ID :\n\27[31m                 ")
-    	local admin=io.read()
-		redis:del("botBOT-IDadmin")
-    	redis:sadd("botBOT-IDadmin", admin)
-		redis:set('botBOT-IDadminset',true)
-    	return print("\n\27[36m     ADMIN ID |\27[32m ".. admin .." \27[36m| شناسه ادمین")
-	end
-end
-function get_bot (i, naji)
-	function bot_info (i, naji)
-		redis:set("botBOT-IDid",naji.id_)
-		if naji.first_name_ then
-			redis:set("botBOT-IDfname",naji.first_name_)
-		end
-		if naji.last_name_ then
-			redis:set("botBOT-IDlanme",naji.last_name_)
-		end
-		redis:set("botBOT-IDnum",naji.phone_number_)
-		return naji.id_
-	end
-	tdcli_function ({ID = "GetMe",}, bot_info, nil)
-end
-function reload(chat_id,msg_id)
-	loadfile("./bot-BOT-ID.lua")()
-	send(chat_id, msg_id, "<i>با موفقیت انجام شد.</i>")
-end
-function is_naji(msg)
-    local var = false
-	local hash = 'botBOT-IDadmin'
-	local user = msg.sender_user_id_
-    local Naji = redis:sismember(hash, user)
-	if Naji then
-		var = true
 	end
 	return var
 end
@@ -849,69 +811,7 @@ end
 								tdcli_function ({
 									ID = "AddChatMember",
 									chat_id_ = i.chat_id,
-									user_id_ = naji.users_[n].id_,
-									forward_limit_ = 50
-								},  dl_cb, nil)
-							end
-							for n=1, #users do
-								tdcli_function ({
-									ID = "AddChatMember",
-									chat_id_ = i.chat_id,
-									user_id_ = users[n],
-									forward_limit_ = 50
-								},  dl_cb, nil)
-							end
-						end, {chat_id=msg.chat_id_})
-						return send(msg.chat_id_, msg.id_, "<i>در حال افزودن مخاطبین به گروه ...</i>")
-					end
-				end
-			end
-			if redis:sismember("botBOT-IDanswerslist", text) then
-				if redis:get("botBOT-IDautoanswer") then
-					if msg.sender_user_id_ ~= bot_id then
-						local answer = redis:hget("botBOT-IDanswers", text)
-						send(msg.chat_id_, 0, answer)
-					end
-				end
-			end
-		elseif (msg.content_.ID == "MessageContact" and redis:get("botBOT-IDsavecontacts")) then
-			local id = msg.content_.contact_.user_id_
-			if not redis:sismember("botBOT-IDaddedcontacts",id) then
-				redis:sadd("botBOT-IDaddedcontacts",id)
-				local first = msg.content_.contact_.first_name_ or "-"
-				local last = msg.content_.contact_.last_name_ or "-"
-				local phone = msg.content_.contact_.phone_number_
-				local id = msg.content_.contact_.user_id_
-				tdcli_function ({
-					ID = "ImportContacts",
-					contacts_ = {[0] = {
-							phone_number_ = tostring(phone),
-							first_name_ = tostring(first),
-							last_name_ = tostring(last),
-							user_id_ = id
-						},
-					},
-				}, dl_cb, nil)
-				if redis:get("botBOT-IDaddcontact") and msg.sender_user_id_ ~= bot_id then
-					local fname = redis:get("botBOT-IDfname")
-					local lnasme = redis:get("botBOT-IDlname") or ""
-					local num = redis:get("botBOT-IDnum")
-					tdcli_function ({
-						ID = "SendMessage",
-						chat_id_ = msg.chat_id_,
-						reply_to_message_id_ = msg.id_,
-						disable_notification_ = 1,
-						from_background_ = 1,
-						reply_markup_ = nil,
-						input_message_content_ = {
-							ID = "InputMessageContact",
-							contact_ = {
-								ID = "Contact",
-								phone_number_ = num,
-								first_name_ = fname,
-								last_name_ = lname,
-								user_id_ = bot_id
-							},
+								
 						},
 					}, dl_cb, nil)
 				end
